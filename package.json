@@ -1,0 +1,13 @@
+{
+  "name": "gh-milestone",
+  "version": "1.0.0",
+  "description": "See your GitHub issues and PRs grouped by milestone, right in the terminal",
+  "bin": { "gh-milestone": "./cli.js" },
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": { "test": "node --test tests/" },
+  "keywords": ["github", "milestone", "cli", "gh", "issues", "prs"],
+  "author": "sulthonzh",
+  "license": "MIT",
+  "engines": { "node": ">=18" }
+}
