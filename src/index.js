@@ -1,8 +1,5 @@
 import { execSync } from 'child_process';
 
-/**
- * Check if gh CLI is available and authenticated
- */
 export function ghAvailable() {
   try {
     execSync('gh auth status', { stdio: 'pipe' });
@@ -12,9 +9,6 @@ export function ghAvailable() {
   }
 }
 
-/**
- * Parse CLI arguments
- */
 export function parseArgs(argv = process.argv.slice(2)) {
   const args = { _: [] };
   for (let i = 0; i < argv.length; i++) {
@@ -56,9 +50,6 @@ Examples:
   gh-milestone --repo sulthonzh/my-project --milestone "v2.0"
   gh-milestone --repo sulthonzh/my-project --json`;
 
-/**
- * Run a gh api command and return parsed JSON
- */
 function ghApi(endpoint, repo) {
   const cmd = `gh api ${endpoint} --repo ${repo}`;
   try {
@@ -69,9 +60,6 @@ function ghApi(endpoint, repo) {
   }
 }
 
-/**
- * Fetch milestones with their issues/PRs
- */
 export async function fetchMilestones({ repo, milestone, all, issuesOnly, prsOnly }) {
   if (!repo) throw new Error('--repo is required');
   
@@ -80,7 +68,6 @@ export async function fetchMilestones({ repo, milestone, all, issuesOnly, prsOnl
   
   if (!Array.isArray(milestones)) return [];
   
-  // Filter by title if specified
   let filtered = milestones;
   if (milestone) {
     filtered = milestones.filter(m => 
@@ -88,7 +75,6 @@ export async function fetchMilestones({ repo, milestone, all, issuesOnly, prsOnl
     );
   }
   
-  // Fetch issues for each milestone
   const result = [];
   for (const ms of filtered) {
     const issues = ghApi(
@@ -98,7 +84,6 @@ export async function fetchMilestones({ repo, milestone, all, issuesOnly, prsOnl
     
     let items = Array.isArray(issues) ? issues : [];
     
-    // Filter issues vs PRs
     if (issuesOnly) {
       items = items.filter(i => !i.pull_request);
     } else if (prsOnly) {
@@ -134,18 +119,12 @@ export async function fetchMilestones({ repo, milestone, all, issuesOnly, prsOnl
   return result;
 }
 
-/**
- * Build a progress bar
- */
 export function progressBar(closed, total, width = 10) {
   if (total === 0) return '░'.repeat(width);
   const filled = Math.round((closed / total) * width);
   return '█'.repeat(filled) + '░'.repeat(width - filled);
 }
 
-/**
- * Format milestone data as text
- */
 export function formatText(milestones) {
   if (!milestones.length) return 'No milestones found.';
   
@@ -163,7 +142,6 @@ export function formatText(milestones) {
       lines.push(`   ${ms.description.slice(0, 80)}`);
     }
     
-    // Separate closed and open items
     const closed = ms.items.filter(i => i.state === 'closed');
     const open = ms.items.filter(i => i.state === 'open');
     
@@ -192,16 +170,10 @@ export function formatText(milestones) {
   return lines.join('\n');
 }
 
-/**
- * Format milestone data as JSON
- */
 export function formatJSON(milestones) {
   return JSON.stringify(milestones, null, 2);
 }
 
-/**
- * Format milestone data as Markdown
- */
 export function formatMarkdown(milestones) {
   if (!milestones.length) return 'No milestones found.';
   
